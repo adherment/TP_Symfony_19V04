@@ -1,0 +1,16 @@
+{% extends 'blocks/navbar.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+    {{ parent() }}
+    <div class="container">
+        <section>
+            <h1 class="display-4">Info utilisateur</h1>
+            <utilisateur class="text-center">
+                <p class="lead">Nom : {{ user.nom }}</p>
+                <p class="lead">Prénom : {{ user.prenom }}</p>
+            </utilisateur>
+        </section>
+    </div>
+{% endblock %}
