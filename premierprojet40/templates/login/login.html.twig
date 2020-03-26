@@ -7,20 +7,22 @@
 <div class="container">
     <section>
         <h1 class="display-4">Connexion</h1>
+        {% if error %}
+            <div class="alert alert-warning text-center">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
         <article>
-            {{ form_start(formLogin) }}
-            <div class='form-group'>
-                {{ form_label(formLogin.mailAddress, 'Adresse mail') }}
-                {{ form_widget(formLogin.mailAddress, {'attr' :{'class':'form-control'}}) }}
-                <small class="form-text text-muted">Votre adresse mail ne sera pas diffusée à nos partenaires</small>
-            </div>
-            <div class='form-group'>
-                {{ form_label(formLogin.password, 'Mot de passe') }}
-                {{ form_widget(formLogin.password, {'attr' :{'class':'form-control'}}) }}
-            </div>
-            {{ form_widget(formLogin.submit, {'attr' :{'class':'btn btn-primary'}}) }}
-            
-            {{ form_end(formLogin) }}
+            <form action="{{ path('login') }}" method="post">
+                <div class="form-group">
+                    <label for="username">Email : </label>
+                    <input type="text" class="form-control" id="username" aria-describedby="emailHelp" name="_username" value="{{ last_username }}">
+                    <small id="emailHelp" class="form-text text-muted">Votre adresse mail ne sera pas diffusée à nos partenaires</small>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mot de passe : </label>
+                    <input type="password" class="form-control" id="password" name="_password">
+                </div>
+                <button type="submit" class="btn btn-primary">Connexion</button>
+            </form>
         </article>
     </section>
 </div>

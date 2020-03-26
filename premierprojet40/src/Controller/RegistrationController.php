@@ -41,7 +41,7 @@ class RegistrationController extends AbstractController
      * @param Request $request
      * @return type
      */
-    public function register(Request $request) {
+    public function register(Request $request, UserPasswordEncoderInterface $passwordEncoder) {
         //Construction du formulaire
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
@@ -49,6 +49,9 @@ class RegistrationController extends AbstractController
         //Test si c'est un retour de formulaire et qu'il est valide
         $form->handleRequest($request);
         if($form->isSubmitted() && $form->isValid()){
+            //On encode le mot de passe
+            $password = $passwordEncoder->encodePassword($user, $user->getPlainPassword());
+            $user->setPassword($password);
             //On stocke l'utilisateur en BD
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($user);

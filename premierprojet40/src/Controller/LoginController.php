@@ -10,47 +10,44 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use \Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use App\Entity\User;
+use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Security\Core\Security;
 
 class LoginController extends AbstractController
 {
     /**
      * @Route("/login", name="login")
      */
-    public function login(Request $request)
+    public function login(AuthenticationUtils $authenticationUtils)
     {
-        $formLogin = $this->createFormLogin();
-        $formLogin->handleRequest($request);
-        if($formLogin->isSubmitted() && $formLogin->isValid()){
-            $mail = $formLogin['mailAddress']->getData();
-            $password = $formLogin['password']->getData();
-            $user = $this->fetchUser($mail, $password);
-            return $this->render('login/user.html.twig',
-                array(
-                    'user' => $user,
-                    'title' => 'info utilisateur'
-                ));
-        }
-        return $this->render('login/login.html.twig',
-                array(
-                    'formLogin' => $formLogin->createView(),
-                    'title' => 'Connexion'
+        $error = $authenticationUtils->getLastAuthenticationError();
+        $lastUsername = $authenticationUtils->getLastUsername();
+        return $this->render('login/login.html.twig', array(
+                    'last_username' => $lastUsername,
+                    'error' => $error,
+                    'title' => "login"
                 ));
     }
     
-    private function createFormLogin(){
-        return $this->createFormBuilder()
-                ->add('mailAddress', EmailType::class)
-                ->add('password', PasswordType::class)
-                ->add('submit', SubmitType::class)
-                ->getForm();
-    }
-    
-    private function fetchUser(string $mail, string $password){
-        $repository = $this->getDoctrine()->getManager()->getRepository(User::class);
-        $result = $repository->findOneBy(array(
-            'mail' => $mail,
-            'password' => $password
+    /**
+     * @Route("/user", name="user")
+     * @param Security $security
+     */
+    public function showUser(Security $security){
+        $user = $security->getUser();
+        return $this->render('login/user.html.twig', array(
+            'user' => $user,
+            'title' => "login"
         ));
-        return $result;
+    }
+    
+    /**
+     * @Route("/logout", name="logout")
+     */
+    public function logout(){
+        return $this->render(array(
+            'login/login.html.twig',
+            'title' => "deconnexion"
+        ));
     }
 }
